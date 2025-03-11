@@ -1,8 +1,16 @@
-
-import { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { BookOpen, Award, MessageCircle, Users, BarChart3, Menu, X, LogIn } from 'lucide-react';
-import { useUser } from '@/contexts/UserContext';
+import { useState, useEffect } from "react";
+import { Link, useLocation } from "react-router-dom";
+import {
+  BookOpen,
+  Award,
+  MessageCircle,
+  Users,
+  BarChart3,
+  Menu,
+  X,
+  LogIn,
+} from "lucide-react";
+import { useUser } from "@/contexts/UserContext";
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -11,11 +19,27 @@ const Navbar = () => {
   const { isAuthenticated } = useUser();
 
   const navItems = [
-    { name: 'Courses', icon: <BookOpen className="h-4 w-4" />, link: '/courses' },
-    { name: 'Quizzes', icon: <Award className="h-4 w-4" />, link: '/quizzes' },
-    { name: 'Chatbot', icon: <MessageCircle className="h-4 w-4" />, link: '/chatbot' },
-    { name: 'Community', icon: <Users className="h-4 w-4" />, link: '/community' },
-    { name: 'Leaderboard', icon: <BarChart3 className="h-4 w-4" />, link: '/leaderboard' },
+    {
+      name: "Courses",
+      icon: <BookOpen className="h-4 w-4" />,
+      link: "/courses",
+    },
+    { name: "Quizzes", icon: <Award className="h-4 w-4" />, link: "/quizzes" },
+    {
+      name: "Chatbot",
+      icon: <MessageCircle className="h-4 w-4" />,
+      link: "/chatbot",
+    },
+    {
+      name: "Community",
+      icon: <Users className="h-4 w-4" />,
+      link: "/community",
+    },
+    {
+      name: "Leaderboard",
+      icon: <BarChart3 className="h-4 w-4" />,
+      link: "/leaderboard",
+    },
   ];
 
   useEffect(() => {
@@ -27,19 +51,19 @@ const Navbar = () => {
       }
     };
 
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   return (
-    <nav 
+    <nav
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled ? 'glass-panel py-3' : 'bg-transparent py-5'
+        isScrolled ? "glass-panel py-3" : "bg-transparent py-5"
       }`}
     >
       <div className="container mx-auto px-4 flex justify-between items-center">
-        <Link 
-          to="/" 
+        <Link
+          to="/"
           className="text-2xl font-bold flex items-center gap-2 text-white transition-all duration-300 hover:text-neon-purple"
         >
           <div className="relative">
@@ -58,9 +82,9 @@ const Navbar = () => {
               key={item.name}
               to={item.link}
               className={`flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-full transition-all duration-300 hover:bg-muted ${
-                location.pathname === item.link 
-                  ? 'text-neon-purple bg-muted' 
-                  : 'text-muted-foreground hover:text-white'
+                location.pathname === item.link
+                  ? "text-neon-purple bg-muted"
+                  : "text-muted-foreground hover:text-white"
               }`}
             >
               {item.icon}
@@ -70,21 +94,29 @@ const Navbar = () => {
         </div>
 
         {/* Login/Signup buttons - only show on home page or when not authenticated */}
-        {(location.pathname === '/' && !isAuthenticated) && (
+        {location.pathname === "/" && !isAuthenticated && (
           <div className="hidden md:flex items-center gap-3">
-            <Link to="/login" className="px-4 py-1.5 text-sm font-medium rounded-full transition-all duration-300 hover:bg-muted text-white">
+            <Link
+              to="/login"
+              className="px-4 py-1.5 text-sm font-medium rounded-full transition-all duration-300 hover:bg-muted text-white"
+            >
               Login
             </Link>
-            <Link to="/signup" className="px-4 py-1.5 text-sm font-medium rounded-full bg-neon-purple hover:bg-neon-purple/90 transition-all duration-300 text-white neon-glow neon-glow-purple">
+            <Link
+              to="/signup"
+              className="px-4 py-1.5 text-sm font-medium rounded-full bg-neon-purple hover:bg-neon-purple/90 transition-all duration-300 text-white neon-glow neon-glow-purple"
+            >
               Get Started
             </Link>
           </div>
         )}
 
         {/* Mobile Menu Button */}
-        <button 
-          className="md:hidden p-2 rounded-full text-muted-foreground hover:text-white focus:outline-none"
+        <button
+          className="md:hidden p-2 rounded-full bg-accent/30 text-white hover:bg-accent/50 focus:outline-none focus:ring-2 focus:ring-neon-purple/50 transition-all"
           onClick={() => setIsMenuOpen(!isMenuOpen)}
+          aria-label={isMenuOpen ? "Close menu" : "Open menu"}
+          aria-expanded={isMenuOpen}
         >
           {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
@@ -99,9 +131,9 @@ const Navbar = () => {
                 key={item.name}
                 to={item.link}
                 className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                  location.pathname === item.link 
-                    ? 'text-neon-purple bg-accent' 
-                    : 'text-muted-foreground hover:text-white hover:bg-accent'
+                  location.pathname === item.link
+                    ? "text-neon-purple bg-accent"
+                    : "text-muted-foreground hover:text-white hover:bg-accent"
                 }`}
                 onClick={() => setIsMenuOpen(false)}
               >
@@ -110,9 +142,9 @@ const Navbar = () => {
               </Link>
             ))}
             {/* Only show login/signup on home page */}
-            {location.pathname === '/' && !isAuthenticated && (
+            {location.pathname === "/" && !isAuthenticated && (
               <div className="mt-3 pt-3 border-t border-border flex flex-col gap-2">
-                <Link 
+                <Link
                   to="/login"
                   className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-white hover:bg-accent transition-all"
                   onClick={() => setIsMenuOpen(false)}

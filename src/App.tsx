@@ -14,6 +14,13 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import NotFound from "./pages/NotFound";
 import CourseDetails from "./pages/CourseDetails";
+import QuizDetails from "./pages/QuizDetails";
+import QuantumPhysicsQuiz from "./pages/QuizDetails/QuantumPhysicsQuiz";
+import WebDevelopmentQuiz from "./pages/QuizDetails/WebDevelopmentQuiz";
+import AdvancedCalculusQuiz from "./pages/QuizDetails/AdvancedCalculusQuiz";
+import MachineLearningCourse from "./pages/CourseDetails/MachineLearningCourse";
+import QuantumComputingCourse from "./pages/CourseDetails/QuantumComputingCourse";
+import CybersecurityCourse from "./pages/CourseDetails/CybersecurityCourse";
 
 const queryClient = new QueryClient();
 
@@ -28,7 +35,32 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/courses" element={<Courses />} />
             <Route path="/courses/:id" element={<CourseDetails />} />
+            <Route
+              path="/courses/machine-learning"
+              element={<MachineLearningCourse />}
+            />
+            <Route
+              path="/courses/quantum-computing"
+              element={<QuantumComputingCourse />}
+            />
+            <Route
+              path="/courses/cybersecurity"
+              element={<CybersecurityCourse />}
+            />
             <Route path="/quizzes" element={<Quizzes />} />
+            <Route path="/quizzes/:id" element={<QuizDetails />} />
+            <Route
+              path="/quizzes/quantum-physics"
+              element={<QuantumPhysicsQuiz />}
+            />
+            <Route
+              path="/quizzes/web-development"
+              element={<WebDevelopmentQuiz />}
+            />
+            <Route
+              path="/quizzes/advanced-calculus"
+              element={<AdvancedCalculusQuiz />}
+            />
             <Route path="/chatbot" element={<Chatbot />} />
             <Route path="/community" element={<Community />} />
             <Route path="/leaderboard" element={<Leaderboard />} />

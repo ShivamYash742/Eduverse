@@ -15,6 +15,20 @@ interface CourseCardProps {
   id?: number;
 }
 
+// Function to get the course route based on the course ID
+const getCourseRoute = (id: number = 0) => {
+  switch (id) {
+    case 1:
+      return "/courses/machine-learning";
+    case 2:
+      return "/courses/quantum-computing";
+    case 3:
+      return "/courses/cybersecurity";
+    default:
+      return `/courses/${id}`;
+  }
+};
+
 const CourseCard = ({
   title,
   category,
@@ -55,9 +69,12 @@ const CourseCard = ({
 
         {/* Play button overlay */}
         <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-          <button className="w-12 h-12 rounded-full bg-neon-purple/90 text-white flex items-center justify-center transform hover:scale-110 transition-transform">
+          <Link
+            to={getCourseRoute(courseid)}
+            className="w-12 h-12 rounded-full bg-neon-purple/90 text-white flex items-center justify-center transform hover:scale-110 transition-transform"
+          >
             <Play className="w-5 h-5 ml-1" />
-          </button>
+          </Link>
         </div>
 
         {/* Category label */}
@@ -113,7 +130,7 @@ const CourseCard = ({
       {/* Card footer */}
       <div className="p-4 border-t border-white/5 flex items-center justify-between">
         <Link
-          to={`/courses/${courseid}`}
+          to={getCourseRoute(courseid)}
           className="text-white text-sm font-medium hover:text-neon-purple transition-colors"
         >
           View Course

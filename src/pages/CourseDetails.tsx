@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import {
   Box,
   Typography,
@@ -66,13 +66,13 @@ const CourseDetails: React.FC = () => {
         <div className="relative bg-hero-pattern py-16 mb-12">
           <div className="absolute inset-0 bg-glow-purple opacity-10"></div>
           <Container maxWidth="lg" className="relative z-10">
-            <Button
-              onClick={() => navigate("/courses")}
+            <Link
+              to="/courses"
               className="mb-6 text-white hover:text-neon-purple transition-colors flex items-center gap-2"
             >
               <ArrowLeft size={20} />
               Back to Courses
-            </Button>
+            </Link>
 
             <Grid container spacing={6}>
               <Grid item xs={12} md={8}>
@@ -129,22 +129,20 @@ const CourseDetails: React.FC = () => {
                     ${courseDetails.price}
                   </Typography>
 
-                  <Button
-                    variant="contained"
-                    fullWidth
-                    className="bg-neon-purple hover:bg-neon-purple/90 text-white mb-4 py-3"
-                    startIcon={<Play />}
+                  <Link
+                    to={`/courses/${id}/learn`}
+                    className="bg-neon-purple hover:bg-neon-purple/90 text-white mb-4 py-3 px-4 rounded flex items-center justify-center gap-2 w-full"
                   >
+                    <Play size={18} />
                     Start Learning
-                  </Button>
+                  </Link>
 
-                  <Button
-                    variant="outlined"
-                    fullWidth
-                    className="border-neon-purple text-neon-purple hover:bg-neon-purple/10 py-3"
+                  <Link
+                    to={`/courses/${id}/wishlist`}
+                    className="border border-neon-purple text-neon-purple hover:bg-neon-purple/10 py-3 px-4 rounded flex items-center justify-center w-full"
                   >
                     Add to Wishlist
-                  </Button>
+                  </Link>
                 </div>
               </Grid>
             </Grid>
