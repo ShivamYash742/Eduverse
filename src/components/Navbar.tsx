@@ -42,6 +42,11 @@ const Navbar = () => {
       link: "/community",
     },
     {
+      name: "Games",
+      icon: <Gamepad className="h-4 w-4" />,
+      link: "/games",
+    },
+    {
       name: "Leaderboard",
       icon: <BarChart3 className="h-4 w-4" />,
       link: "/leaderboard",
