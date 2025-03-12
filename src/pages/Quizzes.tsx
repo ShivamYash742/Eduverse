@@ -11,9 +11,11 @@ import {
   Timer,
   CheckCircle,
   X,
+  Gamepad,
 } from "lucide-react";
 import Navbar from "../components/Navbar";
 import { useScrollAnimation } from "../lib/animations";
+import { useGame } from "../contexts/GameContext";
 
 // Quiz categories
 const quizCategories = [
@@ -253,8 +255,15 @@ const Quizzes = () => {
   const [activeCategory, setActiveCategory] = useState<number | null>(null);
   const [showQuizModal, setShowQuizModal] = useState(false);
   const navigate = useNavigate();
+  const { updateMissionProgress } = useGame();
 
   useScrollAnimation();
+
+  // Update mission progress when visiting the quizzes page
+  useEffect(() => {
+    // Update the "Knowledge Explorer" mission progress
+    updateMissionProgress("weekly-1", 1);
+  }, [updateMissionProgress]);
 
   return (
     <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
@@ -288,13 +297,29 @@ const Quizzes = () => {
                   )}
                 </div>
 
-                <button
-                  className="px-6 py-3 bg-neon-purple rounded-lg text-white font-medium flex items-center gap-2 hover:bg-neon-purple/90 transition-colors neon-glow neon-glow-purple"
-                  onClick={() => setShowQuizModal(true)}
-                >
-                  <Zap className="w-5 h-5" />
-                  Start a Random Quiz
-                </button>
+                <div className="flex flex-wrap gap-3">
+                  <button
+                    className="px-6 py-3 bg-neon-purple rounded-lg text-white font-medium flex items-center gap-2 hover:bg-neon-purple/90 transition-colors neon-glow neon-glow-purple"
+                    onClick={() => setShowQuizModal(true)}
+                  >
+                    <Zap className="w-5 h-5" />
+                    Start a Random Quiz
+                  </button>
+
+                  <button
+                    className="px-6 py-3 bg-accent/60 rounded-lg text-white font-medium flex items-center gap-2 hover:bg-accent/80 transition-colors"
+                    onClick={() =>
+                      document
+                        .querySelector('button[aria-label="Open Game Hub"]')
+                        ?.dispatchEvent(
+                          new MouseEvent("click", { bubbles: true })
+                        )
+                    }
+                  >
+                    <Gamepad className="w-5 h-5" />
+                    Open Game Hub
+                  </button>
+                </div>
               </div>
 
               <div className="relative animate-on-scroll">
@@ -349,7 +374,7 @@ const Quizzes = () => {
                             key={i}
                             className="w-8 h-8 rounded-full border-2 border-background bg-accent flex items-center justify-center text-white text-xs font-medium"
                           >
-                            {i + 1}
+                            {["A", "B", "C"][i]}
                           </div>
                         ))}
                       </div>
@@ -361,6 +386,129 @@ const Quizzes = () => {
           </div>
         </div>
 
+        {/* Featured quiz */}
+        <div className="container mx-auto px-4 mb-16">
+          <h2 className="text-2xl font-bold text-white mb-8">Featured Quiz</h2>
+
+          <div className="glass-panel rounded-xl overflow-hidden border border-white/5 hover:border-white/10 transition-all duration-300">
+            <div className="grid grid-cols-1 lg:grid-cols-3">
+              <div className="lg:col-span-2 relative">
+                <img
+                  src={featuredQuiz.image}
+                  alt={featuredQuiz.title}
+                  className="w-full h-full object-cover"
+                  style={{ maxHeight: "400px" }}
+                />
+                <div className="absolute inset-0 bg-gradient-to-r from-background via-background/80 to-transparent"></div>
+                <div className="absolute inset-0 p-8 flex flex-col justify-center">
+                  <div
+                    className={`inline-block px-3 py-1 rounded-full text-xs font-medium mb-4 ${
+                      featuredQuiz.difficulty === "Beginner"
+                        ? "bg-green-500/20 text-green-400"
+                        : featuredQuiz.difficulty === "Intermediate"
+                        ? "bg-yellow-500/20 text-yellow-400"
+                        : "bg-red-500/20 text-red-400"
+                    }`}
+                  >
+                    {featuredQuiz.difficulty}
+                  </div>
+                  <h3 className="text-3xl font-bold text-white mb-4">
+                    {featuredQuiz.title}
+                  </h3>
+                  <p className="text-muted-foreground mb-6 max-w-md">
+                    {featuredQuiz.description}
+                  </p>
+                  <div className="flex flex-wrap gap-4 mb-6">
+                    <div className="flex items-center gap-1 text-muted-foreground">
+                      <Target className="h-4 w-4" />
+                      <span>{featuredQuiz.questions} Questions</span>
+                    </div>
+                    <div className="flex items-center gap-1 text-muted-foreground">
+                      <Timer className="h-4 w-4" />
+                      <span>{featuredQuiz.timeLimit}</span>
+                    </div>
+                    <div className="flex items-center gap-1 text-muted-foreground">
+                      <Award className="h-4 w-4" />
+                      <span>{featuredQuiz.category}</span>
+                    </div>
+                  </div>
+                  <button
+                    className="px-6 py-3 bg-neon-purple rounded-lg text-white font-medium flex items-center gap-2 hover:bg-neon-purple/90 transition-colors neon-glow neon-glow-purple w-fit"
+                    onClick={() => navigate("/quizzes/astrophysics")}
+                  >
+                    <Zap className="w-5 h-5" />
+                    Start Quiz
+                  </button>
+                </div>
+              </div>
+              <div className="p-6">
+                <div className="flex items-center justify-between mb-6">
+                  <h4 className="text-xl font-semibold text-white">
+                    Leaderboard
+                  </h4>
+                  <span className="text-sm text-muted-foreground">
+                    {featuredQuiz.participants.toLocaleString()} participants
+                  </span>
+                </div>
+
+                <div className="space-y-4">
+                  {featuredQuiz.leaderboard.map((leader) => (
+                    <div
+                      key={leader.rank}
+                      className="flex items-center gap-3 p-3 rounded-lg bg-accent/20 hover:bg-accent/30 transition-colors"
+                    >
+                      <div
+                        className={`w-8 h-8 rounded-full flex items-center justify-center text-white font-medium ${
+                          leader.rank === 1
+                            ? "bg-yellow-500"
+                            : leader.rank === 2
+                            ? "bg-gray-400"
+                            : "bg-amber-700"
+                        }`}
+                      >
+                        {leader.rank}
+                      </div>
+                      <img
+                        src={leader.avatar}
+                        alt={leader.name}
+                        className="w-8 h-8 rounded-full"
+                      />
+                      <div className="flex-1">
+                        <div className="font-medium text-white">
+                          {leader.name}
+                        </div>
+                      </div>
+                      <div className="text-lg font-bold text-neon-purple">
+                        {leader.score}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="mt-6 pt-4 border-t border-white/5">
+                  <button className="text-neon-purple hover:underline transition-all w-full text-center">
+                    View Full Leaderboard
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Trending quizzes */}
+        <div className="container mx-auto px-4 mb-16">
+          <h2 className="text-2xl font-bold text-white mb-8">
+            Trending Quizzes
+          </h2>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {trendingQuizzes.map((quiz) => (
+              <QuizCard key={quiz.id} quiz={quiz} />
+            ))}
+          </div>
+        </div>
+
+        {/* Quiz categories */}
         <div className="container mx-auto px-4">
           {/* Quiz categories */}
           <div className="mb-16">
@@ -404,145 +552,13 @@ const Quizzes = () => {
                       {category.popularTags.map((tag, index) => (
                         <span
                           key={index}
-                          className="px-2 py-1 bg-white/10 rounded-full text-xs text-white"
+                          className="px-2 py-1 rounded-full text-xs bg-accent/60 text-white"
                         >
                           {tag}
                         </span>
                       ))}
                     </div>
-
-                    <div className="mt-6 pt-6 border-t border-white/5 flex justify-between items-center">
-                      <button className="text-sm font-medium text-white hover:text-neon-purple transition-colors">
-                        Browse Quizzes
-                      </button>
-                      <div className="flex -space-x-2">
-                        {[...Array(3)].map((_, i) => (
-                          <div
-                            key={i}
-                            className="w-6 h-6 rounded-full bg-accent border-2 border-dark-card"
-                          ></div>
-                        ))}
-                      </div>
-                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Featured quiz */}
-          <div className="mb-16 animate-on-scroll">
-            <div className="flex justify-between items-center mb-8">
-              <h2 className="text-2xl font-bold text-white">Featured Quiz</h2>
-              <button className="text-neon-purple text-sm font-medium hover:underline">
-                See all featured
-              </button>
-            </div>
-
-            <div
-              className="glass-panel rounded-xl overflow-hidden cursor-pointer"
-              onClick={() => navigate("/quizzes/quantum-physics")}
-            >
-              <div className="grid grid-cols-1 lg:grid-cols-2">
-                <div className="relative h-64 lg:h-auto">
-                  <img
-                    src={featuredQuiz.image}
-                    alt={featuredQuiz.title}
-                    className="w-full h-full object-cover"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-r from-background to-transparent"></div>
-                  <div className="absolute bottom-0 left-0 p-6">
-                    <span
-                      className={`px-3 py-1 rounded-full text-xs font-medium mb-3 inline-block ${
-                        featuredQuiz.difficulty === "Beginner"
-                          ? "bg-green-500/20 text-green-400"
-                          : featuredQuiz.difficulty === "Intermediate"
-                          ? "bg-yellow-500/20 text-yellow-400"
-                          : "bg-red-500/20 text-red-400"
-                      }`}
-                    >
-                      {featuredQuiz.difficulty}
-                    </span>
-                    <h3 className="text-2xl font-bold text-white mb-2">
-                      {featuredQuiz.title}
-                    </h3>
-                    <p className="text-white/80 text-sm">
-                      {featuredQuiz.questions} Questions •{" "}
-                      {featuredQuiz.timeLimit} •{" "}
-                      {featuredQuiz.participants.toLocaleString()} Participants
-                    </p>
-                  </div>
-                </div>
-
-                <div className="p-6">
-                  <p className="text-muted-foreground mb-6">
-                    {featuredQuiz.description}
-                  </p>
-
-                  <div className="mb-6">
-                    <h4 className="text-white font-semibold mb-3 flex items-center gap-2">
-                      <Trophy className="w-4 h-4 text-yellow-400" />
-                      Leaderboard
-                    </h4>
-
-                    <div className="space-y-3">
-                      {featuredQuiz.leaderboard.map((leader) => (
-                        <div
-                          key={leader.rank}
-                          className="flex items-center p-2 bg-accent/40 rounded-lg"
-                        >
-                          <div className="w-6 h-6 rounded-full bg-accent flex items-center justify-center text-white text-xs font-medium mr-3">
-                            {leader.rank}
-                          </div>
-                          <div className="w-8 h-8 rounded-full bg-accent mr-3">
-                            <img
-                              src={leader.avatar}
-                              alt={leader.name}
-                              className="w-8 h-8 rounded-full object-cover"
-                            />
-                          </div>
-                          <div className="flex-1">
-                            <div className="text-white font-medium">
-                              {leader.name}
-                            </div>
-                          </div>
-                          <div className="text-neon-purple font-bold">
-                            {leader.score} pts
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  <Link
-                    to="/quizzes/quantum-physics"
-                    className="w-full py-3 bg-neon-purple rounded-lg text-white font-medium hover:bg-neon-purple/90 transition-colors text-center block"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                    }}
-                  >
-                    Take This Quiz
-                  </Link>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Trending quizzes */}
-          <div>
-            <div className="flex justify-between items-center mb-8">
-              <h2 className="text-2xl font-bold text-white">
-                Trending Quizzes
-              </h2>
-              <button className="text-neon-purple text-sm font-medium hover:underline">
-                View all
-              </button>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {trendingQuizzes.map((quiz) => (
-                <div key={quiz.id} className="animate-on-scroll">
-                  <QuizCard quiz={quiz} />
                 </div>
               ))}
             </div>
@@ -550,90 +566,106 @@ const Quizzes = () => {
         </div>
       </main>
 
-      {/* Quick start quiz modal */}
+      {/* Quiz modal */}
       {showQuizModal && (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="glass-panel rounded-xl w-full max-w-lg transform transition-all animate-fade-in">
-            <div className="flex justify-between items-center p-6 border-b border-white/10">
-              <h3 className="text-xl font-bold text-white">Quick Start Quiz</h3>
-              <button
-                className="text-muted-foreground hover:text-white transition-colors"
-                onClick={() => setShowQuizModal(false)}
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
+        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+          <div className="glass-panel rounded-xl overflow-hidden border border-white/10 w-full max-w-2xl animate-scale-in">
             <div className="p-6">
-              <div className="mb-6">
-                <h4 className="text-white font-semibold mb-3">
-                  Choose your difficulty:
-                </h4>
-                <div className="grid grid-cols-3 gap-3">
-                  {["Beginner", "Intermediate", "Advanced"].map((level) => (
-                    <button
-                      key={level}
-                      className={`p-3 rounded-lg border text-center ${
-                        level === "Intermediate"
-                          ? "border-neon-purple bg-neon-purple/10 text-white"
-                          : "border-white/10 bg-accent/40 text-muted-foreground hover:bg-accent/60 hover:text-white"
-                      } transition-colors`}
-                    >
-                      {level}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div className="mb-6">
-                <h4 className="text-white font-semibold mb-3">
-                  Select category:
-                </h4>
-                <div className="grid grid-cols-2 gap-3">
-                  {quizCategories.map((category) => (
-                    <button
-                      key={category.id}
-                      className={`p-3 rounded-lg border text-center flex items-center justify-center gap-2 ${
-                        category.id === 2
-                          ? "border-neon-purple bg-neon-purple/10 text-white"
-                          : "border-white/10 bg-accent/40 text-muted-foreground hover:bg-accent/60 hover:text-white"
-                      } transition-colors`}
-                    >
-                      {category.icon}
-                      {category.title}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div className="mb-6">
-                <h4 className="text-white font-semibold mb-3">Quiz length:</h4>
-                <div className="grid grid-cols-3 gap-3">
-                  {["10 questions", "20 questions", "30 questions"].map(
-                    (length, index) => (
-                      <button
-                        key={index}
-                        className={`p-3 rounded-lg border text-center ${
-                          index === 1
-                            ? "border-neon-purple bg-neon-purple/10 text-white"
-                            : "border-white/10 bg-accent/40 text-muted-foreground hover:bg-accent/60 hover:text-white"
-                        } transition-colors`}
-                      >
-                        {length}
-                      </button>
-                    )
-                  )}
-                </div>
-              </div>
-
-              <div className="flex gap-3">
+              <div className="flex justify-between items-center mb-6">
+                <h3 className="text-2xl font-bold text-white">
+                  Start a Random Quiz
+                </h3>
                 <button
-                  className="flex-1 py-3 bg-accent/60 rounded-lg text-white hover:bg-accent/80 transition-colors"
+                  className="h-8 w-8 rounded-full bg-accent/40 flex items-center justify-center hover:bg-accent/60 transition-colors"
                   onClick={() => setShowQuizModal(false)}
                 >
-                  Cancel
+                  <X className="h-5 w-5" />
                 </button>
-                <button className="flex-1 py-3 bg-neon-purple rounded-lg text-white hover:bg-neon-purple/90 transition-colors">
+              </div>
+
+              <div className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <label className="text-sm text-muted-foreground">
+                      Category
+                    </label>
+                    <select className="w-full bg-accent/30 border border-white/10 rounded-lg p-3 text-white">
+                      <option value="any">Any Category</option>
+                      {quizCategories.map((category) => (
+                        <option key={category.id} value={category.id}>
+                          {category.title}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm text-muted-foreground">
+                      Difficulty
+                    </label>
+                    <select className="w-full bg-accent/30 border border-white/10 rounded-lg p-3 text-white">
+                      <option value="any">Any Difficulty</option>
+                      <option value="beginner">Beginner</option>
+                      <option value="intermediate">Intermediate</option>
+                      <option value="advanced">Advanced</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm text-muted-foreground">
+                    Number of Questions
+                  </label>
+                  <div className="flex items-center gap-4">
+                    <input
+                      type="range"
+                      min="5"
+                      max="50"
+                      defaultValue="10"
+                      className="flex-1"
+                    />
+                    <span className="text-white font-medium">10</span>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm text-muted-foreground">
+                    Time Limit
+                  </label>
+                  <div className="flex gap-4">
+                    <div className="flex-1 bg-accent/30 border border-white/10 rounded-lg p-3 flex items-center justify-center gap-2">
+                      <input
+                        type="radio"
+                        name="time"
+                        id="time-none"
+                        defaultChecked
+                      />
+                      <label htmlFor="time-none" className="text-white">
+                        No Limit
+                      </label>
+                    </div>
+                    <div className="flex-1 bg-accent/30 border border-white/10 rounded-lg p-3 flex items-center justify-center gap-2">
+                      <input type="radio" name="time" id="time-15" />
+                      <label htmlFor="time-15" className="text-white">
+                        15 min
+                      </label>
+                    </div>
+                    <div className="flex-1 bg-accent/30 border border-white/10 rounded-lg p-3 flex items-center justify-center gap-2">
+                      <input type="radio" name="time" id="time-30" />
+                      <label htmlFor="time-30" className="text-white">
+                        30 min
+                      </label>
+                    </div>
+                  </div>
+                </div>
+
+                <button
+                  className="w-full px-6 py-3 bg-neon-purple rounded-lg text-white font-medium flex items-center justify-center gap-2 hover:bg-neon-purple/90 transition-colors neon-glow neon-glow-purple"
+                  onClick={() => {
+                    setShowQuizModal(false);
+                    navigate("/quizzes/random");
+                  }}
+                >
+                  <Zap className="w-5 h-5" />
                   Start Quiz
                 </button>
               </div>

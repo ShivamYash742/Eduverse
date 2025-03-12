@@ -15,6 +15,9 @@ import {
 } from "lucide-react";
 import Navbar from "../../components/Navbar";
 import { useScrollAnimation } from "../../lib/animations";
+import QuizSession from "../../components/QuizSession";
+import { webDevelopmentQuizData } from "../../data/quizData";
+import { useGame } from "../../contexts/GameContext";
 
 // Interface for quiz details
 interface QuizDetails {
@@ -45,6 +48,8 @@ const WebDevelopmentQuiz: React.FC = () => {
     "overview" | "questions" | "leaderboard"
   >("overview");
   const [showStartModal, setShowStartModal] = useState(false);
+  const [quizStarted, setQuizStarted] = useState(false);
+  const { updateMissionProgress } = useGame();
 
   useScrollAnimation();
 
@@ -134,6 +139,28 @@ const WebDevelopmentQuiz: React.FC = () => {
     }
   };
 
+  // Handle quiz completion
+  const handleQuizComplete = (score: number, totalPossible: number) => {
+    // Update mission progress
+    updateMissionProgress("weekly-1", 1); // Update "Knowledge Explorer" mission
+
+    console.log(`Quiz completed with score: ${score}/${totalPossible}`);
+  };
+
+  // If quiz is started, show the quiz session
+  if (quizStarted) {
+    return (
+      <QuizSession
+        quizId={webDevelopmentQuizData.id}
+        quizTitle={webDevelopmentQuizData.title}
+        questions={webDevelopmentQuizData.questions}
+        timeLimit={webDevelopmentQuizData.timeLimit}
+        onComplete={handleQuizComplete}
+        onExit={() => setQuizStarted(false)}
+      />
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Navbar />
@@ -219,23 +246,16 @@ const WebDevelopmentQuiz: React.FC = () => {
                   </div>
                 </div>
 
-                <Link
-                  to="/quizzes/web-development/start"
+                <button
                   className="block w-full py-3 bg-neon-purple rounded-lg text-white font-medium hover:bg-neon-purple/90 transition-colors mb-4 text-center"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setShowStartModal(true);
-                  }}
+                  onClick={() => setQuizStarted(true)}
                 >
                   Start Quiz
-                </Link>
+                </button>
 
-                <Link
-                  to="/quizzes/web-development/favorite"
-                  className="block w-full py-3 border border-neon-purple text-neon-purple rounded-lg font-medium hover:bg-neon-purple/10 transition-colors text-center"
-                >
+                <button className="block w-full py-3 border border-neon-purple text-neon-purple rounded-lg font-medium hover:bg-neon-purple/10 transition-colors text-center">
                   Add to Favorites
-                </Link>
+                </button>
               </div>
             </div>
           </div>
@@ -276,293 +296,311 @@ const WebDevelopmentQuiz: React.FC = () => {
             </button>
           </div>
 
-          {activeTab === "overview" && (
-            <div className="glass-panel p-8 rounded-xl mb-8 animate-on-scroll">
-              <h2 className="text-2xl font-bold text-white mb-4">
-                About This Quiz
-              </h2>
-              <p className="text-muted-foreground mb-8">
-                {quizDetails.description}
-              </p>
+          {/* Tab Content */}
+          <div className="mb-16">
+            {activeTab === "overview" && (
+              <div className="animate-on-scroll">
+                <div className="glass-panel rounded-xl p-6 mb-8">
+                  <h2 className="text-2xl font-bold text-white mb-4">
+                    About This Quiz
+                  </h2>
+                  <p className="text-muted-foreground mb-6">
+                    {quizDetails.description}
+                  </p>
 
-              <h3 className="text-xl font-bold text-white mb-4">
-                What You'll Learn
-              </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-                <div className="flex items-start gap-3">
-                  <div className="w-6 h-6 rounded-full bg-neon-purple/20 flex items-center justify-center mt-1">
-                    <Code size={14} className="text-neon-purple" />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <h3 className="text-lg font-semibold text-white mb-3">
+                        What You'll Learn
+                      </h3>
+                      <ul className="space-y-2">
+                        <li className="flex items-start gap-2">
+                          <CheckCircle className="h-5 w-5 text-green-400 mt-0.5 flex-shrink-0" />
+                          <span className="text-muted-foreground">
+                            Fundamentals of HTML structure and semantic elements
+                          </span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <CheckCircle className="h-5 w-5 text-green-400 mt-0.5 flex-shrink-0" />
+                          <span className="text-muted-foreground">
+                            CSS styling techniques and layout principles
+                          </span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <CheckCircle className="h-5 w-5 text-green-400 mt-0.5 flex-shrink-0" />
+                          <span className="text-muted-foreground">
+                            JavaScript basics and DOM manipulation
+                          </span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <CheckCircle className="h-5 w-5 text-green-400 mt-0.5 flex-shrink-0" />
+                          <span className="text-muted-foreground">
+                            Modern web development best practices
+                          </span>
+                        </li>
+                      </ul>
+                    </div>
+
+                    <div>
+                      <h3 className="text-lg font-semibold text-white mb-3">
+                        Badges You Can Earn
+                      </h3>
+                      <div className="flex flex-wrap gap-4">
+                        {quizDetails.badges.map((badge, index) => (
+                          <div
+                            key={index}
+                            className="flex items-center gap-3 p-3 bg-accent/30 rounded-lg"
+                          >
+                            <div className="h-10 w-10 rounded-full bg-accent/50 flex items-center justify-center text-2xl">
+                              {badge.icon}
+                            </div>
+                            <div>
+                              <div className="font-medium text-white">
+                                {badge.name}
+                              </div>
+                              <div className="text-xs text-muted-foreground">
+                                Score 80%+
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
                   </div>
-                  <p className="text-muted-foreground">
-                    Understand HTML structure and common tags
-                  </p>
                 </div>
-                <div className="flex items-start gap-3">
-                  <div className="w-6 h-6 rounded-full bg-neon-purple/20 flex items-center justify-center mt-1">
-                    <Code size={14} className="text-neon-purple" />
-                  </div>
-                  <p className="text-muted-foreground">
-                    Learn CSS styling and layout techniques
+
+                <div className="glass-panel rounded-xl p-6">
+                  <h2 className="text-2xl font-bold text-white mb-4">
+                    Prerequisites
+                  </h2>
+                  <p className="text-muted-foreground mb-6">
+                    This quiz is designed for beginners, so no prior knowledge
+                    is required. However, having some basic understanding of the
+                    following will be helpful:
                   </p>
-                </div>
-                <div className="flex items-start gap-3">
-                  <div className="w-6 h-6 rounded-full bg-neon-purple/20 flex items-center justify-center mt-1">
-                    <Code size={14} className="text-neon-purple" />
+
+                  <div className="space-y-2">
+                    <div className="flex items-start gap-2">
+                      <Globe className="h-5 w-5 text-neon-blue mt-0.5 flex-shrink-0" />
+                      <span className="text-muted-foreground">
+                        Basic understanding of how websites work
+                      </span>
+                    </div>
+                    <div className="flex items-start gap-2">
+                      <Code className="h-5 w-5 text-neon-blue mt-0.5 flex-shrink-0" />
+                      <span className="text-muted-foreground">
+                        Familiarity with text editors or IDEs
+                      </span>
+                    </div>
+                    <div className="flex items-start gap-2">
+                      <Award className="h-5 w-5 text-neon-blue mt-0.5 flex-shrink-0" />
+                      <span className="text-muted-foreground">
+                        Curiosity about web technologies
+                      </span>
+                    </div>
                   </div>
-                  <p className="text-muted-foreground">
-                    Master JavaScript basics and DOM manipulation
-                  </p>
-                </div>
-                <div className="flex items-start gap-3">
-                  <div className="w-6 h-6 rounded-full bg-neon-purple/20 flex items-center justify-center mt-1">
-                    <Globe size={14} className="text-neon-purple" />
-                  </div>
-                  <p className="text-muted-foreground">
-                    Explore modern web development concepts
-                  </p>
                 </div>
               </div>
+            )}
 
-              <h3 className="text-xl font-bold text-white mb-4">
-                Badges You Can Earn
-              </h3>
-              <div className="flex gap-4 mb-8">
-                {quizDetails.badges.map((badge, index) => (
-                  <div
-                    key={index}
-                    className="glass-panel p-4 rounded-lg text-center"
+            {activeTab === "questions" && (
+              <div className="animate-on-scroll">
+                <div className="glass-panel rounded-xl p-6 mb-8">
+                  <h2 className="text-2xl font-bold text-white mb-6">
+                    Sample Questions
+                  </h2>
+
+                  <div className="space-y-6">
+                    {quizDetails.questionPreview.map((question, index) => (
+                      <div
+                        key={index}
+                        className="p-4 bg-accent/20 rounded-lg border border-white/5"
+                      >
+                        <h3 className="text-lg font-semibold text-white mb-4">
+                          {index + 1}. {question.question}
+                        </h3>
+
+                        <div className="space-y-2 mb-4">
+                          {question.options.map((option, optIndex) => (
+                            <div
+                              key={optIndex}
+                              className={`p-3 rounded-lg ${
+                                question.correctAnswer === optIndex
+                                  ? "bg-green-500/20 border border-green-500/50"
+                                  : "bg-accent/30 border border-white/10"
+                              }`}
+                            >
+                              <div className="flex items-center justify-between">
+                                <span
+                                  className={
+                                    question.correctAnswer === optIndex
+                                      ? "text-green-400"
+                                      : "text-muted-foreground"
+                                  }
+                                >
+                                  {option}
+                                </span>
+                                {question.correctAnswer === optIndex && (
+                                  <CheckCircle className="h-5 w-5 text-green-400" />
+                                )}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+
+                        <div className="text-xs text-muted-foreground">
+                          This is just a preview. The actual quiz will have{" "}
+                          {quizDetails.questions} questions.
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="flex justify-center">
+                  <button
+                    className="px-6 py-3 bg-neon-purple rounded-lg text-white font-medium hover:bg-neon-purple/90 transition-colors flex items-center gap-2"
+                    onClick={() => setQuizStarted(true)}
                   >
-                    <div className="text-3xl mb-2">{badge.icon}</div>
-                    <div className="text-white font-medium">{badge.name}</div>
+                    <Trophy className="h-5 w-5" />
+                    Take the Full Quiz
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {activeTab === "leaderboard" && (
+              <div className="animate-on-scroll">
+                <div className="glass-panel rounded-xl p-6">
+                  <div className="flex justify-between items-center mb-6">
+                    <h2 className="text-2xl font-bold text-white">
+                      Leaderboard
+                    </h2>
+                    <span className="text-sm text-muted-foreground">
+                      {quizDetails.participants.toLocaleString()} participants
+                    </span>
                   </div>
-                ))}
-              </div>
 
-              <h3 className="text-xl font-bold text-white mb-4">
-                Requirements
-              </h3>
-              <div className="flex items-start gap-3 mb-2">
-                <div className="w-6 h-6 rounded-full bg-neon-purple/20 flex items-center justify-center mt-1">
-                  <CheckCircle size={14} className="text-neon-purple" />
-                </div>
-                <p className="text-muted-foreground">
-                  No prior experience required
-                </p>
-              </div>
-              <div className="flex items-start gap-3 mb-2">
-                <div className="w-6 h-6 rounded-full bg-neon-purple/20 flex items-center justify-center mt-1">
-                  <CheckCircle size={14} className="text-neon-purple" />
-                </div>
-                <p className="text-muted-foreground">Basic computer literacy</p>
-              </div>
-              <div className="flex items-start gap-3">
-                <div className="w-6 h-6 rounded-full bg-neon-purple/20 flex items-center justify-center mt-1">
-                  <CheckCircle size={14} className="text-neon-purple" />
-                </div>
-                <p className="text-muted-foreground">
-                  Interest in web development
-                </p>
-              </div>
-            </div>
-          )}
-
-          {activeTab === "questions" && (
-            <div className="glass-panel p-8 rounded-xl mb-8 animate-on-scroll">
-              <h2 className="text-2xl font-bold text-white mb-6">
-                Sample Questions
-              </h2>
-              <p className="text-muted-foreground mb-8">
-                Here are some sample questions to give you an idea of what to
-                expect in this quiz. The actual quiz will contain{" "}
-                {quizDetails.questions} questions.
-              </p>
-
-              <div className="space-y-8">
-                {quizDetails.questionPreview.map((q, qIndex) => (
-                  <div
-                    key={qIndex}
-                    className="border border-white/10 rounded-lg p-6"
-                  >
-                    <h3 className="text-lg font-medium text-white mb-4">
-                      {qIndex + 1}. {q.question}
-                    </h3>
-                    <div className="space-y-3">
-                      {q.options.map((option, oIndex) => (
+                  <div className="space-y-4">
+                    {quizDetails.leaderboard.map((leader) => (
+                      <div
+                        key={leader.rank}
+                        className="flex items-center gap-4 p-4 rounded-lg bg-accent/20 hover:bg-accent/30 transition-colors"
+                      >
                         <div
-                          key={oIndex}
-                          className={`p-3 rounded-lg border ${
-                            oIndex === q.correctAnswer
-                              ? "border-green-500 bg-green-500/10"
-                              : "border-white/10 bg-accent/40"
+                          className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-medium ${
+                            leader.rank === 1
+                              ? "bg-yellow-500"
+                              : leader.rank === 2
+                              ? "bg-gray-400"
+                              : leader.rank === 3
+                              ? "bg-amber-700"
+                              : "bg-accent"
                           }`}
                         >
-                          <div className="flex items-center">
-                            <div
-                              className={`w-6 h-6 rounded-full ${
-                                oIndex === q.correctAnswer
-                                  ? "bg-green-500 text-white"
-                                  : "bg-white/10 text-white"
-                              } flex items-center justify-center mr-3`}
-                            >
-                              {String.fromCharCode(65 + oIndex)}
-                            </div>
-                            <span
-                              className={
-                                oIndex === q.correctAnswer
-                                  ? "text-green-400"
-                                  : "text-muted-foreground"
-                              }
-                            >
-                              {option}
-                            </span>
-                            {oIndex === q.correctAnswer && (
-                              <CheckCircle className="w-5 h-5 text-green-500 ml-auto" />
-                            )}
+                          {leader.rank}
+                        </div>
+                        <img
+                          src={leader.avatar}
+                          alt={leader.name}
+                          className="w-10 h-10 rounded-full"
+                        />
+                        <div className="flex-1">
+                          <div className="font-medium text-white">
+                            {leader.name}
                           </div>
                         </div>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {activeTab === "leaderboard" && (
-            <div className="glass-panel p-8 rounded-xl mb-8 animate-on-scroll">
-              <h2 className="text-2xl font-bold text-white mb-6">
-                Leaderboard
-              </h2>
-              <p className="text-muted-foreground mb-8">
-                Top performers on this quiz. Can you make it to the top?
-              </p>
-
-              <div className="space-y-4">
-                {quizDetails.leaderboard.map((leader) => (
-                  <div
-                    key={leader.rank}
-                    className="flex items-center p-4 bg-accent/40 rounded-lg"
-                  >
-                    <div className="w-8 h-8 rounded-full bg-accent flex items-center justify-center text-white text-sm font-medium mr-4">
-                      {leader.rank}
-                    </div>
-                    <div className="w-10 h-10 rounded-full bg-accent mr-4">
-                      <img
-                        src={leader.avatar}
-                        alt={leader.name}
-                        className="w-10 h-10 rounded-full object-cover"
-                      />
-                    </div>
-                    <div className="flex-1">
-                      <div className="text-white font-medium">
-                        {leader.name}
+                        <div className="text-xl font-bold text-neon-purple">
+                          {leader.score}%
+                        </div>
                       </div>
-                    </div>
-                    <div className="flex items-center">
-                      <Trophy className="w-4 h-4 text-yellow-400 mr-2" />
-                      <div className="text-neon-purple font-bold">
-                        {leader.score} pts
-                      </div>
-                    </div>
+                    ))}
                   </div>
-                ))}
+
+                  <div className="mt-6 pt-4 border-t border-white/5 flex justify-center">
+                    <button
+                      className="px-6 py-3 bg-neon-purple rounded-lg text-white font-medium hover:bg-neon-purple/90 transition-colors flex items-center gap-2"
+                      onClick={() => setQuizStarted(true)}
+                    >
+                      <Trophy className="h-5 w-5" />
+                      Join the Leaderboard
+                    </button>
+                  </div>
+                </div>
               </div>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </main>
 
       {/* Start Quiz Modal */}
       {showStartModal && (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="glass-panel rounded-xl w-full max-w-lg transform transition-all animate-fade-in">
-            <div className="flex justify-between items-center p-6 border-b border-white/10">
-              <h3 className="text-xl font-bold text-white">Start Quiz</h3>
-              <button
-                className="text-muted-foreground hover:text-white transition-colors"
-                onClick={() => setShowStartModal(false)}
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
+        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+          <div className="glass-panel rounded-xl overflow-hidden border border-white/10 w-full max-w-md animate-scale-in">
             <div className="p-6">
-              <div className="mb-6">
-                <h4 className="text-white font-semibold mb-3">Quiz Details:</h4>
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Title:</span>
-                    <span className="text-white">{quizDetails.title}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Difficulty:</span>
-                    <span
-                      className={getDifficultyColor(quizDetails.difficulty)}
-                    >
-                      {quizDetails.difficulty}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Questions:</span>
-                    <span className="text-white">{quizDetails.questions}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Time Limit:</span>
-                    <span className="text-white">{quizDetails.timeLimit}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">XP Reward:</span>
-                    <span className="text-neon-purple">
-                      {quizDetails.xpReward} XP
-                    </span>
-                  </div>
+              <div className="flex justify-between items-center mb-6">
+                <h3 className="text-2xl font-bold text-white">
+                  Ready to Start?
+                </h3>
+                <button
+                  className="h-8 w-8 rounded-full bg-accent/40 flex items-center justify-center hover:bg-accent/60 transition-colors"
+                  onClick={() => setShowStartModal(false)}
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+
+              <div className="space-y-4 mb-6">
+                <p className="text-muted-foreground">
+                  You're about to start the {quizDetails.title}. You'll have{" "}
+                  {quizDetails.timeLimit} to answer {quizDetails.questions}{" "}
+                  questions.
+                </p>
+
+                <div className="bg-accent/30 p-4 rounded-lg">
+                  <h4 className="text-white font-medium mb-2 flex items-center gap-2">
+                    <Trophy className="h-5 w-5 text-neon-purple" />
+                    Rewards
+                  </h4>
+                  <ul className="space-y-2 text-sm">
+                    <li className="flex items-center gap-2">
+                      <CheckCircle className="h-4 w-4 text-green-400" />
+                      <span className="text-muted-foreground">
+                        {quizDetails.xpReward} XP for completion
+                      </span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <CheckCircle className="h-4 w-4 text-green-400" />
+                      <span className="text-muted-foreground">
+                        Badges for 80%+ score
+                      </span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <CheckCircle className="h-4 w-4 text-green-400" />
+                      <span className="text-muted-foreground">
+                        Leaderboard position
+                      </span>
+                    </li>
+                  </ul>
                 </div>
               </div>
 
-              <div className="mb-6">
-                <h4 className="text-white font-semibold mb-3">Rules:</h4>
-                <ul className="space-y-2 text-muted-foreground">
-                  <li className="flex items-start gap-2">
-                    <div className="w-5 h-5 rounded-full bg-neon-purple/20 flex items-center justify-center mt-0.5">
-                      <CheckCircle size={12} className="text-neon-purple" />
-                    </div>
-                    You must complete the quiz within the time limit
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <div className="w-5 h-5 rounded-full bg-neon-purple/20 flex items-center justify-center mt-0.5">
-                      <CheckCircle size={12} className="text-neon-purple" />
-                    </div>
-                    Each question has only one correct answer
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <div className="w-5 h-5 rounded-full bg-neon-purple/20 flex items-center justify-center mt-0.5">
-                      <CheckCircle size={12} className="text-neon-purple" />
-                    </div>
-                    You cannot return to previous questions
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <div className="w-5 h-5 rounded-full bg-neon-purple/20 flex items-center justify-center mt-0.5">
-                      <CheckCircle size={12} className="text-neon-purple" />
-                    </div>
-                    Your score will be calculated based on correct answers and
-                    time taken
-                  </li>
-                </ul>
-              </div>
-
-              <div className="flex gap-3">
+              <div className="flex gap-4">
                 <button
                   className="flex-1 py-3 bg-accent/60 rounded-lg text-white hover:bg-accent/80 transition-colors"
                   onClick={() => setShowStartModal(false)}
                 >
                   Cancel
                 </button>
-                <Link
-                  to="/quizzes/web-development/start"
-                  className="flex-1 py-3 bg-neon-purple rounded-lg text-white hover:bg-neon-purple/90 transition-colors text-center"
+                <button
+                  className="flex-1 py-3 bg-neon-purple rounded-lg text-white hover:bg-neon-purple/90 transition-colors"
+                  onClick={() => {
+                    setShowStartModal(false);
+                    setQuizStarted(true);
+                  }}
                 >
-                  Begin Quiz
-                </Link>
+                  Start Now
+                </button>
               </div>
             </div>
           </div>
