@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useLayoutEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import {
   Box,
@@ -28,17 +28,13 @@ interface CourseDetails {
   learningOutcomes: string[];
 }
 
-const CourseDetails: React.FC = () => {
-  const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
-  useScrollAnimation();
-
-  // TODO: Replace with actual API call
-  const courseDetails: CourseDetails = {
+// Sample course database
+const coursesData: CourseDetails[] = [
+  {
     id: 1,
     title: "Advanced Machine Learning & AI Fundamentals",
     description:
-      "A comprehensive course covering the fundamentals of web development including HTML, CSS, and JavaScript. This course is designed for beginners who want to start their journey in web development. You'll learn through practical examples and hands-on projects.",
+      "A comprehensive course covering the fundamentals of machine learning and AI including algorithms, neural networks, and practical applications. This course is designed for intermediate learners with basic programming knowledge.",
     instructor: "Dr. Sarah Chen",
     duration: "8h 45m",
     category: "Technology",
@@ -55,7 +51,87 @@ const CourseDetails: React.FC = () => {
       "Deploy AI applications",
       "Understand ethical considerations in AI",
     ],
-  };
+  },
+  {
+    id: 2,
+    title: "Quantum Computing: Theory & Practice",
+    description:
+      "Explore the fascinating world of quantum computing, from theoretical foundations to practical implementations. Learn about qubits, quantum gates, and quantum algorithms with hands-on exercises.",
+    instructor: "Prof. Michael Dawkins",
+    duration: "10h 30m",
+    category: "Physics",
+    rating: 4.8,
+    studentsCount: 12350,
+    price: 119.99,
+    image:
+      "https://images.unsplash.com/photo-1639322537504-6427a16b0a28?q=80&w=2232&auto=format&fit=crop",
+    featured: true,
+    learningOutcomes: [
+      "Understand quantum mechanics principles",
+      "Learn quantum computing fundamentals",
+      "Implement quantum algorithms",
+      "Explore quantum programming frameworks",
+      "Analyze quantum computing applications",
+    ],
+  },
+  {
+    id: 3,
+    title: "Cybersecurity for the Modern Enterprise",
+    description:
+      "Develop comprehensive cybersecurity skills for protecting modern enterprises from evolving threats. Learn about network security, penetration testing, and security governance.",
+    instructor: "James Wilson",
+    duration: "6h 15m",
+    category: "Security",
+    rating: 4.7,
+    studentsCount: 28750,
+    price: 89.99,
+    image:
+      "https://images.unsplash.com/photo-1563013544-824ae1b704d3?q=80&w=2070&auto=format&fit=crop",
+    featured: false,
+    learningOutcomes: [
+      "Understand modern cybersecurity threats",
+      "Implement network security measures",
+      "Conduct penetration testing",
+      "Develop incident response plans",
+      "Apply security governance frameworks",
+    ],
+  },
+];
+
+const CourseDetails: React.FC = () => {
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  useScrollAnimation();
+
+  // Add scroll to top functionality
+  useLayoutEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  useEffect(() => {
+    // Additional delayed scroll to ensure page is at the top
+    const timer = setTimeout(() => {
+      window.scrollTo({
+        top: 0,
+        behavior: "auto",
+      });
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Extract course ID from the URL parameter (which might include a slug)
+  const courseId = parseInt(id?.split("-")[0] || "0");
+
+  // Check if this course has a specialized page
+  useEffect(() => {
+    // No redirects - all courses now use ID-based navigation
+    // This ensures consistent navigation by course ID
+  }, [courseId, navigate]);
+
+  // Find the course by ID
+  const courseDetails =
+    coursesData.find((course) => course.id === courseId) || coursesData[0];
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -63,7 +139,7 @@ const CourseDetails: React.FC = () => {
 
       <main className="pt-24 pb-20">
         {/* Hero Section */}
-        <div className="relative bg-hero-pattern py-16 mb-12">
+        <div className="relative bg-gradient-to-r from-gray-900 to-slate-800 py-16 mb-12">
           <div className="absolute inset-0 bg-glow-purple opacity-10"></div>
           <Container maxWidth="lg" className="relative z-10">
             <Link
@@ -130,7 +206,7 @@ const CourseDetails: React.FC = () => {
                   </Typography>
 
                   <Link
-                    to={`/courses/${id}/learn`}
+                    to={`/courses/${courseId}/learn`}
                     className="bg-neon-purple hover:bg-neon-purple/90 text-white mb-4 py-3 px-4 rounded flex items-center justify-center gap-2 w-full"
                   >
                     <Play size={18} />
@@ -138,7 +214,7 @@ const CourseDetails: React.FC = () => {
                   </Link>
 
                   <Link
-                    to={`/courses/${id}/wishlist`}
+                    to={`/courses/${courseId}/wishlist`}
                     className="border border-neon-purple text-neon-purple hover:bg-neon-purple/10 py-3 px-4 rounded flex items-center justify-center w-full"
                   >
                     Add to Wishlist

@@ -285,10 +285,10 @@ const QuizSession = ({
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <button
                   className="px-6 py-3 rounded-lg bg-accent/40 text-white flex items-center justify-center gap-2 hover:bg-accent/60 transition-colors"
-                  onClick={() => navigate("/quizzes")}
+                  onClick={() => navigate(`/quizzes/${quizId}`)}
                 >
                   <Home className="h-5 w-5" />
-                  Back to Quizzes
+                  Back to Quiz
                 </button>
                 <button
                   className="px-6 py-3 rounded-lg bg-neon-purple text-white flex items-center justify-center gap-2 hover:bg-neon-purple/90 transition-colors"

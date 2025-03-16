@@ -39,18 +39,9 @@ const App = () => (
               <Route path="/" element={<Index />} />
               <Route path="/courses" element={<Courses />} />
               <Route path="/courses/:id" element={<CourseDetails />} />
-              <Route
-                path="/courses/machine-learning"
-                element={<MachineLearningCourse />}
-              />
-              <Route
-                path="/courses/quantum-computing"
-                element={<QuantumComputingCourse />}
-              />
-              <Route
-                path="/courses/cybersecurity"
-                element={<CybersecurityCourse />}
-              />
+              <Route path="/courses/1" element={<MachineLearningCourse />} />
+              <Route path="/courses/2" element={<QuantumComputingCourse />} />
+              <Route path="/courses/3" element={<CybersecurityCourse />} />
               <Route path="/quizzes" element={<Quizzes />} />
               <Route path="/quizzes/:id" element={<QuizDetails />} />
               <Route
@@ -58,12 +49,24 @@ const App = () => (
                 element={<QuantumPhysicsQuiz />}
               />
               <Route
+                path="/quizzes/quantum-physics/start"
+                element={<QuantumPhysicsQuiz startQuiz={true} />}
+              />
+              <Route
                 path="/quizzes/web-development"
                 element={<WebDevelopmentQuiz />}
               />
               <Route
+                path="/quizzes/web-development/start"
+                element={<WebDevelopmentQuiz startQuiz={true} />}
+              />
+              <Route
                 path="/quizzes/advanced-calculus"
                 element={<AdvancedCalculusQuiz />}
+              />
+              <Route
+                path="/quizzes/advanced-calculus/start"
+                element={<AdvancedCalculusQuiz startQuiz={true} />}
               />
               <Route path="/chatbot" element={<Chatbot />} />
               <Route path="/community" element={<Community />} />

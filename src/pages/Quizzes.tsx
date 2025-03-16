@@ -12,6 +12,7 @@ import {
   CheckCircle,
   X,
   Gamepad,
+  ArrowLeft,
 } from "lucide-react";
 import Navbar from "../components/Navbar";
 import { useScrollAnimation } from "../lib/animations";
@@ -269,7 +270,29 @@ const Quizzes = () => {
     <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
       <Navbar />
 
-      <main className="pt-24 pb-20">
+      <main className="container mx-auto px-4 py-8 pt-24">
+        {/* Back button */}
+        <div className="mb-6">
+          <Link
+            to="/"
+            className="flex items-center gap-2 text-muted-foreground hover:text-white transition-colors"
+          >
+            <ArrowLeft className="h-5 w-5" />
+            <span>Back to Home</span>
+          </Link>
+        </div>
+
+        {/* Main content */}
+        <div className="text-center max-w-3xl mx-auto mb-16">
+          <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
+            Test Your Knowledge
+          </h1>
+          <p className="text-muted-foreground text-lg">
+            Challenge yourself with quizzes across various subjects and track
+            your progress
+          </p>
+        </div>
+
         {/* Hero section */}
         <div className="relative bg-hero-pattern py-16 mb-12">
           <div className="absolute inset-0 bg-glow-purple opacity-10"></div>

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useLayoutEffect } from "react";
 import { Link } from "react-router-dom";
 import {
   Box,
@@ -35,7 +35,25 @@ interface CourseModule {
 }
 
 const CybersecurityCourse: React.FC = () => {
+  // Add useLayoutEffect to force scroll to top before rendering
+  useLayoutEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   useScrollAnimation();
+
+  // Keep the existing useEffect as a fallback
+  useEffect(() => {
+    // Delay slight to ensure DOM is ready
+    const timer = setTimeout(() => {
+      window.scrollTo({
+        top: 0,
+        behavior: "auto",
+      });
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   // Course-specific data
   const courseDetails = {
@@ -155,13 +173,16 @@ const CybersecurityCourse: React.FC = () => {
       <Navbar />
 
       <main className="pt-24 pb-20">
-        {/* Hero Section */}
-        <div className="relative bg-hero-pattern py-16 mb-12">
-          <div className="absolute inset-0 bg-glow-purple opacity-10"></div>
+        {/* Hero Section - Security themed */}
+        <div className="relative bg-gradient-to-r from-gray-900 to-red-900 py-16 mb-12">
+          <div className="absolute inset-0 bg-binary-pattern opacity-5"></div>
+          <div className="absolute inset-0">
+            <div className="security-scan-line"></div>
+          </div>
           <Container maxWidth="lg" className="relative z-10">
             <Link
               to="/courses"
-              className="mb-6 text-white hover:text-neon-purple transition-colors flex items-center gap-2"
+              className="mb-6 text-red-300 hover:text-red-100 transition-colors flex items-center gap-2"
             >
               <ArrowLeft size={20} />
               Back to Courses
@@ -169,6 +190,10 @@ const CybersecurityCourse: React.FC = () => {
 
             <Grid container spacing={6}>
               <Grid item xs={12} md={8}>
+                <div className="flex items-center gap-3 mb-4">
+                  <Shield className="text-red-500 h-12 w-12" />
+                  <AlertTriangle className="text-yellow-500 h-8 w-8" />
+                </div>
                 <Typography
                   variant="h2"
                   className="text-4xl md:text-5xl font-bold text-white mb-4 animate-on-scroll"
@@ -178,28 +203,28 @@ const CybersecurityCourse: React.FC = () => {
 
                 <div className="flex flex-wrap gap-4 mb-6">
                   <Chip
-                    icon={<Clock className="text-neon-purple" size={16} />}
+                    icon={<Clock className="text-red-400" size={16} />}
                     label={courseDetails.duration}
-                    className="bg-accent/60 text-white"
+                    className="bg-gray-800/80 text-white border border-red-900/50"
                   />
                   <Chip
-                    icon={<Users className="text-neon-purple" size={16} />}
+                    icon={<Users className="text-red-400" size={16} />}
                     label={`${courseDetails.studentsCount.toLocaleString()} students`}
-                    className="bg-accent/60 text-white"
+                    className="bg-gray-800/80 text-white border border-red-900/50"
                   />
                   <Chip
                     icon={<Star className="text-yellow-400" size={16} />}
                     label={`${courseDetails.rating} rating`}
-                    className="bg-accent/60 text-white"
+                    className="bg-gray-800/80 text-white border border-red-900/50"
                   />
                   <Chip
-                    icon={<BookOpen className="text-neon-purple" size={16} />}
+                    icon={<BookOpen className="text-red-400" size={16} />}
                     label={courseDetails.category}
-                    className="bg-accent/60 text-white"
+                    className="bg-gray-800/80 text-white border border-red-900/50"
                   />
                 </div>
 
-                <Typography className="text-muted-foreground text-lg mb-4">
+                <Typography className="text-red-200 text-lg mb-4">
                   by{" "}
                   <span className="text-white font-medium">
                     {courseDetails.instructor}
@@ -208,7 +233,8 @@ const CybersecurityCourse: React.FC = () => {
               </Grid>
 
               <Grid item xs={12} md={4}>
-                <div className="glass-panel p-6 rounded-xl">
+                {/* Security-themed panel */}
+                <div className="glass-panel p-6 rounded-xl border border-red-500/30 bg-gradient-to-br from-gray-900/90 to-red-900/90 backdrop-blur">
                   <img
                     src={courseDetails.image}
                     alt={courseDetails.title}
@@ -223,7 +249,7 @@ const CybersecurityCourse: React.FC = () => {
                   </Typography>
 
                   <Link
-                    to={`/courses/cybersecurity/learn`}
+                    to={`/courses/3/learn`}
                     className="bg-neon-purple hover:bg-neon-purple/90 text-white mb-4 py-3 px-4 rounded flex items-center justify-center gap-2 w-full"
                   >
                     <Play size={18} />
@@ -231,7 +257,7 @@ const CybersecurityCourse: React.FC = () => {
                   </Link>
 
                   <Link
-                    to={`/courses/cybersecurity/wishlist`}
+                    to={`/courses/3/wishlist`}
                     className="border border-neon-purple text-neon-purple hover:bg-neon-purple/10 py-3 px-4 rounded flex items-center justify-center w-full"
                   >
                     Add to Wishlist
@@ -530,12 +556,17 @@ const CybersecurityCourse: React.FC = () => {
                       className="w-16 h-16 rounded object-cover"
                     />
                     <div>
-                      <Typography className="font-medium text-white text-sm">
-                        Blockchain Technology & Cryptocurrency
-                      </Typography>
-                      <Typography className="text-xs text-muted-foreground">
-                        Alex Johnson • 7h 45m
-                      </Typography>
+                      <Link
+                        to="/courses/4"
+                        className="hover:opacity-80 transition-colors"
+                      >
+                        <Typography className="font-medium text-white text-sm">
+                          Blockchain Technology & Cryptocurrency
+                        </Typography>
+                        <Typography className="text-xs text-muted-foreground">
+                          Alex Johnson • 7h 45m
+                        </Typography>
+                      </Link>
                     </div>
                   </div>
                   <div className="flex gap-3">
@@ -545,12 +576,17 @@ const CybersecurityCourse: React.FC = () => {
                       className="w-16 h-16 rounded object-cover"
                     />
                     <div>
-                      <Typography className="font-medium text-white text-sm">
-                        Cloud Computing: AWS Solutions Architect
-                      </Typography>
-                      <Typography className="text-xs text-muted-foreground">
-                        Mark Zhang • 11h 15m
-                      </Typography>
+                      <Link
+                        to="/courses/5"
+                        className="hover:opacity-80 transition-colors"
+                      >
+                        <Typography className="font-medium text-white text-sm">
+                          Cloud Computing: AWS Solutions Architect
+                        </Typography>
+                        <Typography className="text-xs text-muted-foreground">
+                          Mark Zhang • 11h 15m
+                        </Typography>
+                      </Link>
                     </div>
                   </div>
                   <div className="flex gap-3">
@@ -560,12 +596,17 @@ const CybersecurityCourse: React.FC = () => {
                       className="w-16 h-16 rounded object-cover"
                     />
                     <div>
-                      <Typography className="font-medium text-white text-sm">
-                        Frontend Development with React & TypeScript
-                      </Typography>
-                      <Typography className="text-xs text-muted-foreground">
-                        Emma Rodriguez • 12h 20m
-                      </Typography>
+                      <Link
+                        to="/courses/6"
+                        className="hover:opacity-80 transition-colors"
+                      >
+                        <Typography className="font-medium text-white text-sm">
+                          Frontend Development with React & TypeScript
+                        </Typography>
+                        <Typography className="text-xs text-muted-foreground">
+                          Emma Rodriguez • 12h 20m
+                        </Typography>
+                      </Link>
                     </div>
                   </div>
                 </div>

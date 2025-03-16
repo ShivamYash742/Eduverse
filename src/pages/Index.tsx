@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Hero from "../components/Hero";
@@ -11,6 +11,8 @@ import { ChevronUp, Github, Twitter } from "lucide-react";
 
 const Index = () => {
   useScrollAnimation();
+  const [email, setEmail] = useState("");
+  const [subscribed, setSubscribed] = useState(false);
 
   // Fade in animations on load
   useEffect(() => {
@@ -28,6 +30,21 @@ const Index = () => {
   // Scroll to top functionality
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const handleSubscribe = (e) => {
+    e.preventDefault();
+    if (!email || !email.includes("@")) return;
+
+    // Here you would typically call an API to handle the subscription
+    console.log(`Subscribing email: ${email}`);
+    setSubscribed(true);
+    setEmail("");
+
+    // Reset the subscribed state after showing the success message
+    setTimeout(() => {
+      setSubscribed(false);
+    }, 3000);
   };
 
   return (
@@ -133,19 +150,28 @@ const Index = () => {
               <p className="text-muted-foreground mb-4">
                 Stay updated with our latest courses and features.
               </p>
-              <div className="flex">
-                <input
-                  type="email"
-                  placeholder="Your email"
-                  className="flex-1 bg-accent rounded-l-lg px-4 py-2 text-white placeholder:text-muted-foreground focus:outline-none"
-                />
-                <Link
-                  to="/subscribe"
-                  className="px-4 py-2 rounded-r-lg bg-neon-purple text-white hover:bg-neon-purple/90 transition-all flex items-center justify-center"
-                >
-                  Subscribe
-                </Link>
-              </div>
+              {subscribed ? (
+                <div className="bg-neon-green/20 border border-neon-green/30 rounded-lg px-4 py-2 text-neon-green text-sm">
+                  Thanks for subscribing!
+                </div>
+              ) : (
+                <form onSubmit={handleSubscribe} className="flex">
+                  <input
+                    type="email"
+                    placeholder="Your email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="flex-1 bg-accent rounded-l-lg px-4 py-2 text-white placeholder:text-muted-foreground focus:outline-none"
+                    required
+                  />
+                  <button
+                    type="submit"
+                    className="px-4 py-2 rounded-r-lg bg-neon-purple text-white hover:bg-neon-purple/90 transition-all flex items-center justify-center"
+                  >
+                    Subscribe
+                  </button>
+                </form>
+              )}
             </div>
           </div>
 

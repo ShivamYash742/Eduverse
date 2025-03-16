@@ -1,23 +1,28 @@
-
 import { useEffect, useState, useRef } from 'react';
 
 // Function to handle scroll animations
 export function useScrollAnimation() {
   useEffect(() => {
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('visible');
-        }
-      });
-    }, { threshold: 0.1 });
-
-    const animatedElements = document.querySelectorAll('.animate-on-scroll');
-    animatedElements.forEach(el => observer.observe(el));
-
-    return () => {
-      animatedElements.forEach(el => observer.unobserve(el));
-    };
+    // Short delay to allow manual scroll positioning to take effect first
+    const initDelay = setTimeout(() => {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+          }
+        });
+      }, { threshold: 0.1 });
+  
+      const animatedElements = document.querySelectorAll('.animate-on-scroll');
+      animatedElements.forEach(el => observer.observe(el));
+  
+      return () => {
+        animatedElements.forEach(el => observer.unobserve(el));
+        clearTimeout(initDelay);
+      };
+    }, 200);
+    
+    return () => clearTimeout(initDelay);
   }, []);
 }
 

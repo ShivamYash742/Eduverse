@@ -42,13 +42,19 @@ interface QuizDetails {
   }[];
 }
 
-const WebDevelopmentQuiz: React.FC = () => {
+interface WebDevelopmentQuizProps {
+  startQuiz?: boolean;
+}
+
+const WebDevelopmentQuiz: React.FC<WebDevelopmentQuizProps> = ({
+  startQuiz = false,
+}) => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<
     "overview" | "questions" | "leaderboard"
   >("overview");
   const [showStartModal, setShowStartModal] = useState(false);
-  const [quizStarted, setQuizStarted] = useState(false);
+  const [quizStarted, setQuizStarted] = useState(startQuiz);
   const { updateMissionProgress } = useGame();
 
   useScrollAnimation();
@@ -156,7 +162,10 @@ const WebDevelopmentQuiz: React.FC = () => {
         questions={webDevelopmentQuizData.questions}
         timeLimit={webDevelopmentQuizData.timeLimit}
         onComplete={handleQuizComplete}
-        onExit={() => setQuizStarted(false)}
+        onExit={() => {
+          setQuizStarted(false);
+          navigate("/quizzes/web-development");
+        }}
       />
     );
   }
@@ -592,15 +601,12 @@ const WebDevelopmentQuiz: React.FC = () => {
                 >
                   Cancel
                 </button>
-                <button
-                  className="flex-1 py-3 bg-neon-purple rounded-lg text-white hover:bg-neon-purple/90 transition-colors"
-                  onClick={() => {
-                    setShowStartModal(false);
-                    setQuizStarted(true);
-                  }}
+                <Link
+                  to="/quizzes/web-development/start"
+                  className="flex-1 py-3 bg-neon-purple rounded-lg text-white hover:bg-neon-purple/90 transition-colors text-center"
                 >
                   Start Now
-                </button>
+                </Link>
               </div>
             </div>
           </div>

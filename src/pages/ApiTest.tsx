@@ -2,6 +2,8 @@ import { useState } from "react";
 import { testCohereAPI, chatWithCohere, CohereMessage } from "../lib/cohere";
 import { env } from "../lib/env";
 import Navbar from "../components/Navbar";
+import { Link } from "react-router-dom";
+import { ArrowLeft } from "lucide-react";
 
 const ApiTest = () => {
   const [testResult, setTestResult] = useState<string | null>(null);
@@ -51,6 +53,15 @@ const ApiTest = () => {
 
       <main className="pt-24 pb-20">
         <div className="container mx-auto px-4">
+          <div className="mb-6">
+            <Link
+              to="/"
+              className="flex items-center gap-2 text-muted-foreground hover:text-white transition-colors"
+            >
+              <ArrowLeft className="h-5 w-5" />
+              <span>Back to Home</span>
+            </Link>
+          </div>
           <div className="max-w-4xl mx-auto">
             <div className="mb-8">
               <h1 className="text-4xl font-bold text-white mb-4">

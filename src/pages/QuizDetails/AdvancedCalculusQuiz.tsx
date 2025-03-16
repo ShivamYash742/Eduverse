@@ -15,6 +15,9 @@ import {
 } from "lucide-react";
 import Navbar from "../../components/Navbar";
 import { useScrollAnimation } from "../../lib/animations";
+import { useGame } from "../../contexts/GameContext";
+import QuizSession from "../../components/QuizSession";
+import { advancedCalculusQuizData } from "../../data/quizData";
 
 // Interface for quiz details
 interface QuizDetails {
@@ -39,12 +42,20 @@ interface QuizDetails {
   }[];
 }
 
-const AdvancedCalculusQuiz: React.FC = () => {
+interface AdvancedCalculusQuizProps {
+  startQuiz?: boolean;
+}
+
+const AdvancedCalculusQuiz: React.FC<AdvancedCalculusQuizProps> = ({
+  startQuiz = false,
+}) => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<
     "overview" | "questions" | "leaderboard"
   >("overview");
   const [showStartModal, setShowStartModal] = useState(false);
+  const [quizStarted, setQuizStarted] = useState(startQuiz);
+  const { updateMissionProgress } = useGame();
 
   useScrollAnimation();
 
@@ -144,6 +155,31 @@ const AdvancedCalculusQuiz: React.FC = () => {
         return "bg-blue-500/20 text-blue-400";
     }
   };
+
+  // Handle quiz completion
+  const handleQuizComplete = (score: number, totalPossible: number) => {
+    // Update mission progress
+    updateMissionProgress("weekly-1", 1); // Update "Knowledge Explorer" mission
+
+    console.log(`Quiz completed with score: ${score}/${totalPossible}`);
+  };
+
+  // If quiz is started, show the quiz session
+  if (quizStarted) {
+    return (
+      <QuizSession
+        quizId="advanced-calculus"
+        quizTitle={quizDetails.title}
+        questions={advancedCalculusQuizData.questions}
+        timeLimit={advancedCalculusQuizData.timeLimit}
+        onComplete={handleQuizComplete}
+        onExit={() => {
+          setQuizStarted(false);
+          navigate("/quizzes/advanced-calculus");
+        }}
+      />
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background text-foreground">

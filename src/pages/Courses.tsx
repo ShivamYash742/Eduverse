@@ -1,6 +1,12 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { Search, Filter, SlidersHorizontal, BookOpen } from "lucide-react";
+import { useNavigate, Link } from "react-router-dom";
+import {
+  Search,
+  Filter,
+  SlidersHorizontal,
+  BookOpen,
+  ArrowLeft,
+} from "lucide-react";
 import Navbar from "../components/Navbar";
 import CourseCard from "../components/CourseCard";
 import { useScrollAnimation } from "../lib/animations";
@@ -193,43 +199,66 @@ const Courses = () => {
     <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
       <Navbar />
 
-      <main className="pt-24 pb-20">
-        {/* Hero banner */}
-        <div className="relative bg-hero-pattern py-16 mb-12">
-          <div className="absolute inset-0 bg-glow-purple opacity-10"></div>
-          <div className="container mx-auto px-4 relative z-10">
-            <div className="max-w-3xl">
-              <h1 className="text-4xl md:text-5xl font-bold text-white mb-4 animate-on-scroll">
-                Explore Our Course Library
-              </h1>
-              <p className="text-xl text-muted-foreground mb-8 animate-on-scroll">
-                Discover a wide range of courses designed to enhance your skills
-                and knowledge.
-              </p>
+      <main className="container mx-auto px-4 py-8 pt-24">
+        {/* Back button */}
+        <div className="mb-6">
+          <Link
+            to="/"
+            className="flex items-center gap-2 text-muted-foreground hover:text-white transition-colors"
+          >
+            <ArrowLeft className="h-5 w-5" />
+            <span>Back to Home</span>
+          </Link>
+        </div>
 
-              {/* Search bar */}
-              <div className="flex flex-col md:flex-row gap-4 animate-on-scroll">
-                <div className="relative flex-1">
-                  <Search
-                    className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground"
-                    size={18}
-                  />
-                  <input
-                    type="text"
-                    placeholder="Search for courses, instructors..."
-                    className="w-full pl-10 pr-4 py-3 bg-accent/60 backdrop-blur-md border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-neon-purple"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                  />
+        {/* Page header */}
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
+          <div>
+            <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">
+              Explore Courses
+            </h1>
+            <p className="text-muted-foreground">
+              Discover our wide range of courses across various subjects
+            </p>
+          </div>
+
+          {/* Hero banner */}
+          <div className="relative bg-hero-pattern py-16 mb-12">
+            <div className="absolute inset-0 bg-glow-purple opacity-10"></div>
+            <div className="container mx-auto px-4 relative z-10">
+              <div className="max-w-3xl">
+                <h1 className="text-4xl md:text-5xl font-bold text-white mb-4 animate-on-scroll">
+                  Explore Our Course Library
+                </h1>
+                <p className="text-xl text-muted-foreground mb-8 animate-on-scroll">
+                  Discover a wide range of courses designed to enhance your
+                  skills and knowledge.
+                </p>
+
+                {/* Search bar */}
+                <div className="flex flex-col md:flex-row gap-4 animate-on-scroll">
+                  <div className="relative flex-1">
+                    <Search
+                      className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground"
+                      size={18}
+                    />
+                    <input
+                      type="text"
+                      placeholder="Search for courses, instructors..."
+                      className="w-full pl-10 pr-4 py-3 bg-accent/60 backdrop-blur-md border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-neon-purple"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                    />
+                  </div>
+
+                  <button
+                    className="md:w-auto px-6 py-3 bg-accent/60 backdrop-blur-md border border-white/10 rounded-lg text-white flex items-center gap-2 hover:bg-accent/80 transition-colors"
+                    onClick={() => setIsFilterOpen(!isFilterOpen)}
+                  >
+                    <Filter size={18} />
+                    Filter
+                  </button>
                 </div>
-
-                <button
-                  className="md:w-auto px-6 py-3 bg-accent/60 backdrop-blur-md border border-white/10 rounded-lg text-white flex items-center gap-2 hover:bg-accent/80 transition-colors"
-                  onClick={() => setIsFilterOpen(!isFilterOpen)}
-                >
-                  <Filter size={18} />
-                  Filter
-                </button>
               </div>
             </div>
           </div>
